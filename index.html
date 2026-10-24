@@ -1,81 +1,343 @@
+
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ریاضی‌یار | دستیار ریاضی هفتم به بالا</title>
+<title>ریاضی‌یار | آموزش تخصصی ریاضی هفتم تا نهم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&family=Lalezar&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Lalezar&display=swap" rel="stylesheet">
 <style>
-:root{--green:#58a96b;--dark:#287a4b;--light:#dff6df;--yellow:#ffd85c;--cream:#fffdf5;--ink:#263b2c}
-*{box-sizing:border-box}html,body{height:100%;margin:0}
-body{font-family:Vazirmatn,Tahoma,sans-serif;color:var(--ink);background:linear-gradient(135deg,#f8fff6,#f5fbff);display:flex;justify-content:center;align-items:center;padding:18px}
-.shell{width:min(700px,100%);height:min(900px,95vh);background:#fff;border:5px solid var(--green);border-radius:30px;box-shadow:0 18px 55px #35704633;display:flex;flex-direction:column;overflow:hidden}
-header{text-align:center;padding:20px;background:linear-gradient(135deg,#65b976,#3f9b60);color:#fff;border-bottom:7px solid var(--yellow)}
-h1{font-family:Lalezar,Vazirmatn,cursive;font-size:2.2rem;margin:0}header p{margin:3px 0 10px}
-.tools{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.chip{border:2px solid #fff;background:#fff;color:var(--dark);font:inherit;font-size:.78rem;padding:7px 12px;border-radius:99px;cursor:pointer}
-#grade{font:inherit;border:2px solid #fff;border-radius:99px;padding:7px 12px;background:#fff;color:var(--dark)}
-#chat{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:var(--cream)}
-.msg{max-width:90%;padding:13px 16px;line-height:2;font-size:.95rem;word-wrap:break-word;box-shadow:0 4px 12px #40704814}
-.bot{align-self:flex-start;background:#fff;border:2px solid var(--light);border-radius:20px 20px 20px 6px}.user{align-self:flex-end;background:linear-gradient(135deg,#65b976,#358c55);color:#fff;border-radius:20px 20px 6px 20px}
-.msg mjx-container{direction:ltr!important;margin:.45em 0!important}.msg mjx-container[display=true]{overflow-x:auto;max-width:100%;padding:5px 0}
-form{display:flex;gap:9px;padding:13px 17px 17px;border-top:2px solid var(--light);background:#fff}
-input{flex:1;font:inherit;padding:13px 18px;border:2px solid #cfe5d0;border-radius:99px;background:#f8fff7;outline:none}
-button.send{width:48px;height:48px;border:0;border-radius:50%;cursor:pointer;color:#fff;font-size:1.15rem;background:linear-gradient(135deg,#72bd7e,#338d55)}
-button:disabled{opacity:.5;cursor:wait}
-@media(max-width:600px){body{padding:0}.shell{width:100%;height:100%;border-radius:0;border-width:4px}}
+:root{
+  --green:#58a96b;--dark:#287a4b;--light:#e4f5e5;
+  --yellow:#ffd85c;--cream:#fffdf5;--ink:#263b2c;
+  --muted:#748477;--border:#e3eee3
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Vazirmatn,Tahoma,sans-serif;color:var(--ink);background:#f4f8f3}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:grid;grid-template-columns:255px minmax(0,1fr);height:100dvh;max-width:1600px;margin:auto;background:white}
+.sidebar{background:#fbfdf9;border-left:1px solid var(--border);padding:20px 15px;display:flex;flex-direction:column;gap:17px;min-height:0}
+.brand{display:flex;align-items:center;gap:11px;padding:5px}
+.logo{width:45px;height:45px;display:grid;place-items:center;background:var(--green);color:white;border-radius:15px;font-size:25px;box-shadow:0 5px 12px #58a96b33}
+.brand h1{font:30px Lalezar;margin:0;color:var(--dark)}
+.brand small{display:block;font-size:11px;color:var(--muted)}
+.primary,.secondary,.smallbtn{border:0;border-radius:12px;padding:11px 14px;font-weight:700}
+.primary{background:var(--dark);color:white}
+.secondary{background:white;color:var(--dark);border:1px solid #cfe4d0}
+.newchat{width:100%;display:flex;justify-content:center;gap:8px}
+.section-label{font-size:11px;color:var(--muted);font-weight:800;margin:0 7px}
+.history{display:flex;flex-direction:column;gap:5px;overflow:auto;min-height:0}
+.history-item{display:flex;align-items:center;gap:8px;text-align:right;background:transparent;border:1px solid transparent;border-radius:11px;padding:10px;font-size:12px;color:#425347}
+.history-item.active,.history-item:hover{background:#eaf5e9;border-color:#d9ead9}
+.history-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.history-item .del{border:0;background:transparent;color:#a66;font-size:15px;padding:2px}
+.side-bottom{margin-top:auto;border-top:1px solid var(--border);padding-top:12px}
+.account{background:white;border:1px solid var(--border);border-radius:14px;padding:12px;font-size:12px}
+.account strong{display:block;margin-bottom:5px}
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border)}
+.top-title{font-weight:800}.top-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.top-actions{display:flex;gap:8px;align-items:center}
+#grade{border:1px solid #d8e7d7;background:#f7fbf5;color:var(--dark);border-radius:12px;padding:9px 12px;max-width:125px}
+#loginBtn{white-space:nowrap}
+.chat{flex:1;overflow:auto;padding:28px clamp(15px,5vw,65px);display:flex;flex-direction:column;gap:16px;background:linear-gradient(180deg,#fff,#fffef9)}
+.welcome{max-width:760px;width:100%;margin:auto;text-align:center;padding:15px 0}
+.welcome .hero-icon{font-size:45px}
+.welcome h2{font:36px Lalezar;color:var(--dark);margin:7px 0}
+.welcome p{color:var(--muted);line-height:2;margin:0 auto 22px;max-width:560px;font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:610px;margin:auto}
+.suggestion{border:1px solid var(--border);background:white;border-radius:15px;padding:15px;text-align:right;color:var(--ink);transition:.15s}
+.suggestion:hover{border-color:var(--green);background:#f7fff5;transform:translateY(-1px)}
+.suggestion b{display:block;font-size:13px;margin-bottom:5px}
+.suggestion span{display:block;color:var(--muted);font-size:11px;line-height:1.9}
+.msg{max-width:850px;width:fit-content;min-width:80px;padding:14px 17px;line-height:2.15;font-size:14px;overflow-wrap:anywhere;box-shadow:0 3px 13px #274d2a0a}
+.bot{align-self:flex-start;background:white;border:1px solid var(--border);border-radius:18px 18px 18px 5px}
+.user{align-self:flex-end;background:linear-gradient(135deg,#65b976,#358c55);color:white;border-radius:18px 18px 5px 18px;white-space:pre-wrap}
+.msg img{max-width:100%;max-height:300px;border-radius:12px;display:block;margin-top:8px}
+.msg mjx-container{direction:ltr!important}
+.msg mjx-container[display=true]{overflow-x:auto;max-width:100%;padding:5px 0}
+.composer-area{border-top:1px solid var(--border);background:white;padding:12px clamp(12px,4vw,40px) 16px}
+.image-preview{display:none;align-items:center;gap:10px;padding:8px 12px;margin-bottom:8px;background:#f3f9f0;border-radius:12px;font-size:12px}
+.image-preview img{width:55px;height:55px;object-fit:cover;border-radius:8px}
+.image-preview button{margin-right:auto;border:0;background:transparent;color:#a44;font-size:20px}
+.composer{max-width:950px;margin:auto;border:1px solid #d6e6d5;border-radius:20px;padding:9px;box-shadow:0 5px 22px #274d2a0a}
+.composer textarea{display:block;width:100%;resize:vertical;min-height:55px;max-height:180px;border:0;outline:0;padding:10px;background:transparent;color:var(--ink)}
+.composer-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px}
+.composer-tools{display:flex;align-items:center;gap:7px}
+.iconbtn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:8px 10px;color:var(--dark)}
+.iconbtn:hover{background:#f2faf0}
+.send{border:0;background:var(--dark);color:white;border-radius:12px;padding:10px 17px;font-weight:700}
+.hint{text-align:center;font-size:10px;color:#879187;margin-top:9px}
+.status{font-size:11px;color:var(--muted);padding:0 5px}
+.modal{position:fixed;inset:0;background:#152c1d88;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal.open{display:flex}
+.modal-box{background:white;border-radius:20px;padding:23px;width:min(400px,100%);box-shadow:0 20px 70px #0002}
+.modal-box h3{margin-top:0;color:var(--dark)}
+.modal-box input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin:7px 0 13px;outline-color:var(--green)}
+.modal-actions{display:flex;gap:8px}.modal-actions button{flex:1}
+@media(max-width:720px){
+ .app{grid-template-columns:1fr}
+ .sidebar{display:none}
+ .topbar{height:66px;padding:10px 13px}
+ .top-title{font-size:14px}.top-sub{font-size:10px}
+ .chat{padding:17px 13px}
+ .welcome h2{font-size:31px}.welcome p{font-size:12px}
+ .cards{gap:8px}.suggestion{padding:11px}
+ .msg{font-size:13px;padding:12px}
+ .composer-area{padding:9px}
+ #loginBtn{font-size:11px;padding:8px}
+}
 </style>
 <script>
-window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]'],['$$','$$']],processEscapes:true},svg:{fontCache:'global'}};
+window.MathJax={
+ tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]'],['$$','$$']],processEscapes:true},
+ svg:{fontCache:'global'}
+};
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-<main class="shell">
-<header>
-<div style="font-size:1.6rem">📚 ✏️ 🧮</div>
-<h1>ریاضی‌یار</h1>
-<p>دستیار ریاضی پایه هفتم به بالا 🌱</p>
-<div class="tools">
-<select id="grade" aria-label="پایه">
-<option value="auto">تشخیص پایه</option><option value="7">هفتم</option><option value="8">هشتم</option>
-<option value="9">نهم</option><option value="10">دهم</option><option value="11">یازدهم</option><option value="12">دوازدهم</option>
-</select>
-<button class="chip" type="button" onclick="quickQuestion('فرمول‌های مهم این پایه را دسته‌بندی کن')">📐 فرمول‌ها</button>
-<button class="chip" type="button" onclick="quickQuestion('یک مسئله نمونه را مرحله‌به‌مرحله حل کن')">🧩 مثال</button>
-</div>
-</header>
-<div id="chat" aria-live="polite"></div>
-<form id="form" autocomplete="off">
-<input id="input" placeholder="سؤال ریاضی‌ات را بنویس..." aria-label="پیام شما">
-<button class="send" id="sendBtn" aria-label="ارسال">➤</button>
-</form>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">∑</div><div><h1>ریاضی‌یار</h1><small>دستیار تخصصی ریاضی</small></div></div>
+  <button class="primary newchat" id="newChat">＋ گفت‌وگوی جدید</button>
+  <p class="section-label">گفت‌وگوهای اخیر</p>
+  <div class="history" id="historyList"></div>
+  <div class="side-bottom">
+    <div class="account"><strong id="accountName">حساب مهمان</strong><span id="accountHint">گفت‌وگوها روی همین مرورگر ذخیره می‌شوند.</span></div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div><div class="top-title">آموزش ریاضی، دقیق و مرحله‌به‌مرحله</div><div class="top-sub">ویژهٔ پایه‌های هفتم، هشتم و نهم</div></div>
+    <div class="top-actions">
+      <select id="grade" aria-label="انتخاب پایه">
+        <option value="7">پایه هفتم</option>
+        <option value="8">پایه هشتم</option>
+        <option value="9">پایه نهم</option>
+      </select>
+      <button class="secondary smallbtn" id="loginBtn">ورود</button>
+    </div>
+  </div>
+
+  <div class="chat" id="chat" aria-live="polite">
+    <div class="welcome" id="welcome">
+      <div class="hero-icon">📐</div>
+      <h2>ریاضی را عمیق‌تر یاد بگیر</h2>
+      <p>سؤالت را بنویس یا عکس تمرین را بفرست. پاسخ‌ها شامل استدلال، مراحل حل، فرمول‌ها و بررسی نتیجه خواهند بود.</p>
+      <div class="cards">
+        <button class="suggestion" data-q="مبحث عددهای گویا را با تعریف دقیق، خواص، مثال‌های سطح‌بندی‌شده و اشتباهات رایج آموزش بده."><b>📘 یادگیری عمیق</b><span>تعریف، خواص و مثال‌های تشریحی</span></button>
+        <button class="suggestion" data-q="یک مسئله چندمرحله‌ای متناسب با پایه‌ام درباره معادله طرح کن و راه‌حل کاملش را توضیح بده."><b>🧩 حل مسئله</b><span>از تحلیل صورت سؤال تا بررسی جواب</span></button>
+        <button class="suggestion" data-q="فرمول‌ها و قضیه‌های مهم پایه‌ام را دسته‌بندی کن و کاربرد هرکدام را با مثال توضیح بده."><b>📐 فرمول‌ها و قضیه‌ها</b><span>همراه با شرایط کاربرد و مثال</span></button>
+        <button class="suggestion" data-q="یک سؤال هندسه مناسب پایه‌ام حل کن و فرض، استدلال و نتیجه‌گیری را جداگانه بنویس."><b>📏 استدلال هندسی</b><span>اثبات و استدلال گام‌به‌گام</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="composer-area">
+    <div class="image-preview" id="imagePreview"><img id="previewImg" alt="پیش‌نمایش عکس"><span id="imageName"></span><button type="button" id="removeImage" aria-label="حذف عکس">×</button></div>
+    <form class="composer" id="form">
+      <textarea id="input" placeholder="سؤال ریاضی‌ات را بنویس..." aria-label="پیام شما"></textarea>
+      <div class="composer-bottom">
+        <div class="composer-tools">
+          <button class="iconbtn" id="uploadBtn" type="button">＋ عکس تمرین</button>
+          <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <span class="status" id="status">پایهٔ انتخاب‌شده: هفتم</span>
+        </div>
+        <button class="send" id="sendBtn" type="submit">ارسال ↑</button>
+      </div>
+    </form>
+    <div class="hint">پاسخ هوش مصنوعی را با کتاب و توضیحات معلمت بررسی کن.</div>
+  </div>
 </main>
+</div>
+
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>ورود آزمایشی</h3>
+    <p style="font-size:12px;color:#748477;line-height:1.9">این نسخه نام کاربری را فقط در همین مرورگر نگه می‌دارد؛ هنوز احراز هویت امن و حساب بین دستگاهی ندارد.</p>
+    <label for="username">نام نمایشی</label>
+    <input id="username" maxlength="40" placeholder="مثلاً دانش‌آموز">
+    <div class="modal-actions">
+      <button class="secondary" id="cancelLogin" type="button">انصراف</button>
+      <button class="primary" id="saveLogin" type="button">ادامه</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const chat=document.getElementById('chat'),form=document.getElementById('form'),input=document.getElementById('input'),sendBtn=document.getElementById('sendBtn'),grade=document.getElementById('grade');
-const history=[];
-function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function formatAnswer(text){
-  const parts=text.split(/(\\\([^]*?\\\)|\\\[[^]*?\\\]|\$\$[^]*?\$\$|\$[^$\n]*\$)/g);
-  return parts.map(p=>/^\\\(|^\\\[|^\$\$|^\$/.test(p)?p:escapeHtml(p).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^###\s+(.*)$/gm,'<strong>$1</strong>').replace(/\n/g,'<br>')).join('');
-}
-function renderMath(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el]).catch(console.error)}
-function addMsg(text,who){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=who==='bot'?formatAnswer(text):escapeHtml(text);chat.appendChild(d);if(who==='bot')renderMath(d);chat.scrollTop=chat.scrollHeight;return d}
-addMsg('سلام! 🌱 پایه‌ات را انتخاب کن یا سؤال ریاضی‌ات را بفرست. من راه‌حل را مرحله‌به‌مرحله و فرمول‌ها را با نمایش درست ریاضی ارائه می‌کنم.','bot');
-function quickQuestion(q){input.value=q;form.requestSubmit()}
-form.addEventListener('submit',async e=>{
- e.preventDefault();const text=input.value.trim();if(!text)return;
- input.value='';addMsg(text,'user');sendBtn.disabled=true;
- const wait=addMsg('در حال بررسی سؤال و فرمول‌های مرتبط…','bot');
+const $=id=>document.getElementById(id);
+const chat=$('chat'),form=$('form'),input=$('input'),grade=$('grade');
+const imageInput=$('imageInput'),preview=$('imagePreview');
+const STORE='mathyar_conversations_v2',USER='mathyar_display_name_v1';
+let conversations=loadConversations(),currentId=null,selectedImage=null,busy=false;
+
+function loadConversations(){
  try{
-   const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,grade:grade.value,history})});
-   const data=await r.json();if(!r.ok)throw new Error(data.error||'خطای سرور');
-   history.push({role:'user',content:text},{role:'assistant',content:data.answer});
-   wait.innerHTML=formatAnswer(data.answer);renderMath(wait);
- }catch(err){wait.textContent='ارتباط با سرور برقرار نشد. تنظیمات سرور و کلید API را بررسی کن.';console.error(err)}
- finally{sendBtn.disabled=false;input.focus()}
+  const v=JSON.parse(localStorage.getItem(STORE)||'[]');
+  return Array.isArray(v)?v:[];
+ }catch{return []}
+}
+function saveConversations(){
+ try{localStorage.setItem(STORE,JSON.stringify(conversations))}
+ catch{setStatus('فضای ذخیره‌سازی پر شده؛ گفت‌وگوهای قدیمی را حذف کن.')}
+}
+function setStatus(t){$('status').textContent=t}
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function activeConversation(){return conversations.find(c=>c.id===currentId)}
+function escapeHtml(s){
+ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function formatAnswer(text){
+ const parts=String(text).split(/(\\\([^]*?\\\)|\\\[[^]*?\\\]|\$\$[^]*?\$\$|\$[^$\n]*\$)/g);
+ return parts.map(p=>{
+  if(/^\\\(|^\\\[|^\$\$|^\$/.test(p))return p;
+  return escapeHtml(p)
+   .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+   .replace(/^###\s+(.*)$/gm,'<strong>$1</strong>')
+   .replace(/^##\s+(.*)$/gm,'<strong>$1</strong>')
+   .replace(/\n/g,'<br>');
+ }).join('');
+}
+function renderMath(el){
+ if(window.MathJax?.typesetPromise) MathJax.typesetPromise([el]).catch(()=>{});
+}
+function addMessage(text,role,imageData=null){
+ const d=document.createElement('div');
+ d.className='msg '+(role==='assistant'?'bot':'user');
+ if(role==='assistant')d.innerHTML=formatAnswer(text);
+ else d.textContent=text;
+ if(imageData){
+  const img=document.createElement('img');img.src=imageData;img.alt='عکس تمرین ارسالی';
+  d.appendChild(img);
+ }
+ chat.appendChild(d);
+ if(role==='assistant')renderMath(d);
+ chat.scrollTop=chat.scrollHeight;
+ return d;
+}
+function showWelcome(){
+ chat.innerHTML='';
+ const w=$('welcome').cloneNode(true);w.style.display='block';w.id='welcome';
+ chat.appendChild(w);
+ w.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.q;input.focus()}));
+}
+function renderHistory(){
+ const list=$('historyList');list.innerHTML='';
+ [...conversations].reverse().forEach(c=>{
+  const b=document.createElement('button');b.className='history-item'+(c.id===currentId?' active':'');
+  const title=document.createElement('span');title.textContent=c.title||'گفت‌وگوی جدید';
+  const del=document.createElement('button');del.className='del';del.type='button';del.textContent='×';del.title='حذف گفت‌وگو';
+  del.addEventListener('click',e=>{
+   e.stopPropagation();
+   if(!confirm('این گفت‌وگو حذف شود؟'))return;
+   conversations=conversations.filter(x=>x.id!==c.id);
+   if(currentId===c.id)currentId=null;
+   saveConversations();renderHistory();openConversation(currentId);
+  });
+  b.append(title,del);b.addEventListener('click',()=>openConversation(c.id));
+  list.appendChild(b);
+ });
+}
+function openConversation(id){
+ currentId=id;
+ const c=activeConversation();
+ if(!c){currentId=null;showWelcome();renderHistory();return}
+ chat.innerHTML='';
+ c.messages.forEach(m=>addMessage(m.content,m.role,m.imageData||null));
+ renderHistory();
+}
+function createConversation(){
+ const c={id:newId(),title:'گفت‌وگوی جدید',grade:grade.value,messages:[]};
+ conversations.push(c);currentId=c.id;saveConversations();openConversation(c.id);
+}
+function ensureConversation(){
+ if(!activeConversation())createConversation();
+ return activeConversation();
+}
+function updateTitle(c,text){
+ if(c.title==='گفت‌وگوی جدید')c.title=text.slice(0,36)||'گفت‌وگوی جدید';
+}
+$('newChat').addEventListener('click',()=>{currentId=null;createConversation();input.focus()});
+grade.addEventListener('change',()=>setStatus('پایهٔ انتخاب‌شده: '+({'7':'هفتم','8':'هشتم','9':'نهم'}[grade.value])));
+$('uploadBtn').addEventListener('click',()=>imageInput.click());
+imageInput.addEventListener('change',()=>{
+ const file=imageInput.files?.[0];if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){
+  alert('لطفاً عکس JPG، PNG یا WebP انتخاب کن.');imageInput.value='';return;
+ }
+ if(file.size>4*1024*1024){
+  alert('حجم عکس باید کمتر از ۴ مگابایت باشد.');imageInput.value='';return;
+ }
+ const reader=new FileReader();
+ reader.onload=()=>{
+  selectedImage=reader.result;
+  $('previewImg').src=selectedImage;$('imageName').textContent=file.name;
+  preview.style.display='flex';
+ };
+ reader.readAsDataURL(file);
 });
+$('removeImage').addEventListener('click',()=>{
+ selectedImage=null;imageInput.value='';preview.style.display='none';
+});
+$('loginBtn').addEventListener('click',()=>{
+ $('username').value=localStorage.getItem(USER)||'';
+ $('loginModal').classList.add('open');
+});
+$('cancelLogin').addEventListener('click',()=>$('loginModal').classList.remove('open'));
+$('saveLogin').addEventListener('click',()=>{
+ const name=$('username').value.trim();
+ if(!name){alert('یک نام نمایشی وارد کن.');return}
+ localStorage.setItem(USER,name);
+ $('loginModal').classList.remove('open');updateAccount();
+});
+function updateAccount(){
+ const name=localStorage.getItem(USER);
+ $('accountName').textContent=name||'حساب مهمان';
+ $('accountHint').textContent=name?'ورود محلی روی همین مرورگر':'گفت‌وگوها روی همین مرورگر ذخیره می‌شوند.';
+ $('loginBtn').textContent=name?'تغییر نام':'ورود';
+}
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(busy)return;
+ const text=input.value.trim(),imageData=selectedImage;
+ if(!text&&!imageData)return;
+ const c=ensureConversation();
+ updateTitle(c,text||(imageData?'تمرین تصویری':'گفت‌وگوی جدید'));
+ c.grade=grade.value;
+ c.messages.push({role:'user',content:text||(imageData?'لطفاً سؤال داخل عکس را بخوان و حل کن.':''),imageData:imageData||null});
+ addMessage(text||'لطفاً سؤال داخل عکس را بخوان و حل کن.','user',imageData);
+ input.value='';selectedImage=null;imageInput.value='';preview.style.display='none';
+ busy=true;$('sendBtn').disabled=true;
+ const wait=addMessage('در حال تحلیل سؤال و آماده‌سازی راه‌حل…','assistant');
+ try{
+  const history=c.messages.slice(-11,-1).map(m=>({role:m.role,content:m.content}));
+  const response=await fetch('/api/chat',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({
+    message:text,grade:grade.value,history,
+    ...(imageData?{image:imageData}:{})
+   })
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'خطای سرور');
+  if(typeof data.answer!=='string'||!data.answer.trim())throw new Error('پاسخ معتبری دریافت نشد.');
+  wait.innerHTML=formatAnswer(data.answer);renderMath(wait);
+  c.messages.push({role:'assistant',content:data.answer});
+  saveConversations();renderHistory();
+ }catch(err){
+  wait.textContent='خطا: '+(err.message||'ارتباط با سرور برقرار نشد.');
+  console.error(err);
+ }finally{
+  busy=false;$('sendBtn').disabled=false;input.focus();chat.scrollTop=chat.scrollHeight;
+ }
+});
+updateAccount();renderHistory();showWelcome();setStatus('پایهٔ انتخاب‌شده: هفتم');
 </script>
 </body>
 </html>
