@@ -1,4 +1,4 @@
-
+```javascript
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -15,59 +15,74 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, grade, history = [] } = req.body || {};
+    const {
+      message = "",
+      grade = "7",
+      history = [],
+      image = null
+    } = req.body || {};
 
-    if (!message) {
+    if (!message.trim() && !image) {
       return res.status(400).json({
-        error: "لطفاً سؤال ریاضی را وارد کن."
+        error: "لطفاً سؤال را بنویس یا عکس تمرین را ارسال کن."
       });
     }
 
-    const response = await fetch(
-      "https://api.gapgpt.app/v1/chat/completions",
+    if (
+      image &&
+      (typeof image !== "string" ||
+       !/^data:image\/(jpeg|jpg|png|webp|gif);base64,/i.test(image))
+    ) {
+      return res.status(400).json({
+        error: "فرمت عکس معتبر نیست."
+      });
+    }
+
+    if (image && image.length > 7000000) {
+      return res.status(413).json({
+        error: "حجم عکس زیاد است؛ لطفاً عکس کوچک‌تری بفرست."
+      });
+    }
+
+    const grades = {
+      "7": "هفتم",
+      "8": "هشتم",
+      "9": "نهم"
+    };
+
+    const gradeName = grades[String(grade)] || "هفتم تا نهم";
+
+    const systemPrompt = `
+تو «ریاضی‌یار»، دستیار تخصصی آموزش ریاضی پایه ${gradeName} هستی.
+
+قوانین پاسخ‌گویی:
+- به فارسی روان و دقیق پاسخ بده.
+- مطالب را بیش از حد ساده نکن؛ توضیحات باید علمی و مناسب کتاب ریاضی همین پایه باشند.
+- راه‌حل را مرحله‌به‌مرحله بنویس و دلیل هر مرحله را توضیح بده.
+- فرمول‌ها، جایگذاری عددها و محاسبات را دقیق نشان بده.
+- در هندسه، فرض‌ها، روابط، استدلال و نتیجه‌گیری را مشخص کن.
+- در پایان، در صورت نیاز، روش بررسی جواب یا نکتهٔ مهم را بنویس.
+- اگر عکس ارسال شده، صورت سؤال را با دقت بخوان.
+- اگر بخشی از عکس ناخواناست، درباره‌اش حدس نزن.
+- اگر امکان پردازش تصویر را نداری، صادقانه اعلام کن.
+`;
+
+    const messages = [
       {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                `تو ریاضی‌یار، دستیار آموزش ریاضی پایه ${grade === "auto" ? "هفتم تا دوازدهم" : grade} هستی. به فارسی ساده جواب بده، مسائل را مرحله‌به‌مرحله حل کن و فرمول‌ها را با نمادگذاری LaTeX بنویس.`
-            },
-            ...history.slice(-10),
-            { role: "user", content: message }
-          ]
-        })
+        role: "system",
+        content: systemPrompt
       }
-    );
+    ];
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("GapGPT error:", data);
-      return res.status(502).json({
-        error: "سرویس هوش مصنوعی پاسخ نداد. تنظیمات API را بررسی کن."
-      });
-    }
-
-    const answer = data.choices?.[0]?.message?.content;
-
-    if (!answer) {
-      return res.status(502).json({
-        error: "پاسخ معتبری از سرویس دریافت نشد."
-      });
-    }
-
-    return res.status(200).json({ answer });
-  } catch (error) {
-    console.error("Chat API error:", error);
-    return res.status(500).json({
-      error: "خطا در ارتباط با سرویس هوش مصنوعی."
-    });
-  }
-}
+    if (Array.isArray(history)) {
+      for (const item of history.slice(-10)) {
+        if (
+          item &&
+          ["user", "assistant"].includes(item.role) &&
+          typeof item.content === "string"
+        ) {
+          messages.push({
+            role: item.role,
+            content: item.content.slice(0, 8000)
+          });
+       
