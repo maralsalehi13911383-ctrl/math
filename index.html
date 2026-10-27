@@ -45,6 +45,83 @@ $('removeImage').onclick=()=>{selectedImage=null;$('imageInput').value='';$('ima
 input.oninput=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px'};input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}};
 grade.onchange=()=>{const c=active();if(c){c.grade=grade.value;save(c)}};
 form.onsubmit=async e=>{e.preventDefault();if(!user){showAuth('login');return}const text=input.value.trim();if(!text&&!selectedImage)return;const image=selectedImage?.data||null,question=text||(image?'لطفاً سؤال داخل تصویر را بخوان و حل کن.':'');input.value='';input.style.height='auto';if(!active())await newChat();const c=active();addMessage(question,'user',image);selectedImage=null;$('imageInput').value='';$('imagePreview').classList.remove('show');sendBtn.disabled=true;$('attachBtn').disabled=true;const wait=addMessage('در حال بررسی سؤال…','bot',null,false);wait.querySelector('.bubble').textContent='در حال بررسی سؤال…';try{const payload={message:question,grade:grade.value,history:c.messages.slice(-16).map(m=>({role:m.role,content:m.content}))};if(image)payload.image=image;const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)throw Error(data.error||'خطای سرور');const ans=data.answer||data.message||'پاسخی دریافت نشد.';wait.querySelector('.bubble').innerHTML=answerHtml(ans);math(wait);c.messages.push({role:'assistant',content:ans});c.updatedAt=Date.now();await save(c)}catch(err){wait.querySelector('.bubble').textContent=image?'ارسال عکس موفق نشد. API سمت سرور باید تحلیل تصویر را پشتیبانی کند.':'ارتباط با /api/chat برقرار نشد؛ مسیر API و کلیدش را بررسی کن.';console.error(err)}finally{sendBtn.disabled=false;$('attachBtn').disabled=false;input.focus()}};
-async function init(){showWelcome();if(!window.supabase){showAuth('login');return}if(SUPABASE_URL.startsWith('PASTE_')||SUPABASE_PUBLISHABLE_KEY.startsWith('PASTE_')){showAuth('register');$('authError').textContent='URL و Publishable key را در ابتدای کد وارد کن.';return}sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await sb.auth.getSession();if(session?.user)await signedIn(session.user);else showAuth('register');sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session?.user&&user?.id!==session.user.id)signedIn(session.user);if(event==='SIGNED_OUT'){user=null;conversations=[];currentId=null;renderHistory();showWelcome();showAuth('login');updateProfile()}})}
+
+async function init() {
+  showWelcome();
+
+  if (!window.supabase) {
+    showAuth('login');
+    $('authError').textContent =
+      'سرویس ورود بارگذاری نشده است. صفحه را دوباره باز کن.';
+    return;
+  }
+
+  if (
+    SUPABASE_URL.startsWith('PASTE_') ||
+    SUPABASE_PUBLISHABLE_KEY.startsWith('PASTE_')
+  ) {
+    showAuth('login');
+    $('authError').textContent =
+      'تنظیمات Supabase را بررسی کن.';
+    return;
+  }
+
+  sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  // ابتدا نشست ذخیره‌شده را بررسی می‌کنیم
+  try {
+    const { data, error } = await sb.auth.getSession();
+
+    if (error) {
+      console.error('Session restore error:', error);
+      showAuth('login');
+      $('authError').textContent =
+        'بازیابی ورود ناموفق بود. لطفاً دوباره وارد شو.';
+    } else if (data?.session?.user) {
+      await signedIn(data.session.user);
+    } else {
+      // حساب قبلی را حذف نمی‌کنیم؛ فقط فرم ورود را نشان می‌دهیم
+      showAuth('login');
+    }
+  } catch (error) {
+    console.error('Init error:', error);
+    showAuth('login');
+    $('authError').textContent =
+      'بررسی وضعیت ورود ناموفق بود. دوباره تلاش کن.';
+  }
+
+  // رویدادهای ورود و خروج
+  sb.auth.onAuthStateChange((event, session) => {
+    if (
+      event === 'SIGNED_IN' &&
+      session?.user &&
+      user?.id !== session.user.id
+    ) {
+      signedIn(session.user);
+    }
+
+    if (event === 'SIGNED_OUT') {
+      user = null;
+      conversations = [];
+      currentId = null;
+      renderHistory();
+      showWelcome();
+      showAuth('login');
+      updateProfile();
+    }
+  });
+}
+
 init();
+
 </script></body></html>
