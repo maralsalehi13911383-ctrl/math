@@ -47,11 +47,11 @@ export default async function handler(req, res) {
     }
 
     // محدودیت حجم تصویر
-    if (image && image.length > 4000000) {
-      return res.status(413).json({
-        error: "حجم عکس زیاد است؛ لطفاً عکس کوچک‌تری بفرست."
-      });
-    }
+ if (image && image.length > 3000000) {
+  return res.status(413).json({
+    error: "حجم عکس زیاد است؛ لطفاً عکس کوچک‌تری بفرست."
+  });
+}
 
     const grades = {
       "7": "هفتم",
