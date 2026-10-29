@@ -36,7 +36,42 @@ function updateProfile(){$('profileName').textContent=user?.user_metadata?.full_
 async function signedIn(u){user=u;updateProfile();$('authModal').classList.remove('show');try{await loadChats();if(conversations.length)openChat(conversations[0].id);else await newChat();toast('ورود موفق بود؛ تاریخچه بارگذاری شد.')}catch(e){console.error(e);toast('ورود شد، اما تاریخچه بارگذاری نشد؛ تنظیمات جدول/RLS را بررسی کن.');showWelcome()}}
 $('authSwitch').onclick=()=>showAuth(authMode==='register'?'login':'register');
 $('authForm').onsubmit=async e=>{e.preventDefault();if(!sb){$('authError').textContent='ابتدا URL و Publishable key را در ابتدای کد وارد کن.';return}const email=$('authUser').value.trim(),password=$('authPass').value;$('authSubmit').disabled=true;$('authError').textContent='در حال بررسی…';try{if(authMode==='register'){const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:$('authName').value.trim()||email.split('@')[0]},emailRedirectTo:location.origin}});if(error)throw error;if(data.session&&data.user)await signedIn(data.user);else $('authError').textContent='حساب ساخته شد. ایمیلت را تأیید کن، سپس وارد شو.'}else{const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await signedIn(data.user)}}catch(err){$('authError').textContent=err.message||'خطا در ورود'}finally{$('authSubmit').disabled=false}};
-$('googleBtn').onclick=async()=>{if(!sb){$('authError').textContent='ابتدا تنظیمات Supabase را وارد کن.';return}const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}});if(error)$('authError').textContent=error.message};
+
+$('googleBtn').onclick = async () => {
+  const btn = $('googleBtn');
+  const errorBox = $('authError');
+
+  if (!sb) {
+    errorBox.textContent = 'تنظیمات Supabase وارد نشده است.';
+    return;
+  }
+
+  btn.disabled = true;
+  errorBox.textContent = '';
+
+  try {
+    const { data, error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: location.origin
+      }
+    });
+
+    if (error) throw error;
+
+    if (data?.url) {
+      location.href = data.url;
+    } else {
+      errorBox.textContent = 'آدرس ورود گوگل دریافت نشد.';
+    }
+  } catch (err) {
+    errorBox.textContent = 'خطای ورود گوگل: ' + (err.message || 'نامشخص');
+    console.error('Google login error:', err);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
 $('accountBtn').onclick=()=>{if(!user){showAuth('login');return}if(confirm('از حساب خارج شوی؟ تاریخچه در Supabase باقی می‌ماند.'))sb.auth.signOut()};
 $('newChat').onclick=newChat;$('clearChat').onclick=async()=>{const c=active();if(!c)return;if(!confirm('پیام‌های این گفت‌وگو پاک شوند؟'))return;c.messages=[];c.title='گفت‌وگوی جدید';chat.innerHTML='';showWelcome();await save(c)};
 $('menuBtn').onclick=()=>$('sidebar').classList.toggle('open');$('attachBtn').onclick=()=>$('imageInput').click();
