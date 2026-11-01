@@ -34,7 +34,9 @@ const $=id=>document.getElementById(id),chat=$('chat'),form=$('form'),input=$('i
 let sb=null,user=null,currentId=null,conversations=[],selectedImage=null,authMode='register';
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function answerHtml(s){return String(s??'').split(/(\\\([^]*?\\\)|\\\[[^]*?\\\]|\$\$[^]*?\$\$|\$[^$\n]*\$)/g).map(p=>/^\\\(|^\\\[|^\$\$|^\$/.test(p)?p:esc(p).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^###?\s+(.*)$/gm,'<strong>$1</strong>').replace(/\n/g,'<br>')).join('')}
-function math(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})}async async function copyAnswer(text, button) {
+function math(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})}
+
+async function copyAnswer(text, button) {
   try {
     // تبدیل فرمول‌های LaTeX به متن خوانا
     let cleanText = text
