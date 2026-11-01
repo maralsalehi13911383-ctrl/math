@@ -41,6 +41,17 @@
   direction: ltr !important;
   unicode-bidi: isolate !important;
 }
+/* اصلاح نمایش حروف فارسی در پاسخ هوش مصنوعی */
+.bot .bubble {
+  font-family: 'Vazirmatn', sans-serif !important;
+  direction: rtl !important;
+  text-align: right !important;
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  font-kerning: normal !important;
+  font-variant-ligatures: normal !important;
+  unicode-bidi: plaintext !important;
+}
 </style></head>
 <body>
 <div class="app"><aside class="sidebar" id="sidebar"><div class="brand"><div class="brand-icon">∑</div><div><h1>ریاضی‌یار</h1><p>همراه هوشمند یادگیری</p></div></div><button class="new-chat" id="newChat">＋ گفت‌وگوی جدید</button><div class="side-label">گفت‌وگوهای اخیر</div><div class="history-list" id="historyList"><div class="empty-history">هنوز گفت‌وگویی ذخیره نشده</div></div><div class="profile"><div class="avatar" id="profileAvatar">؟</div><div class="profile-info"><strong id="profileName">دانش‌آموز</strong><small id="profileGrade">وارد حساب شو</small></div><button class="icon-btn" id="accountBtn" aria-label="حساب کاربری">⚙</button></div></aside>
