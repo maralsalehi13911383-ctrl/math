@@ -49,12 +49,6 @@ $('googleBtn').onclick = async () => {
   btn.disabled = true;
   errorBox.textContent = '';
 
-$('googleBtn').onclick = async () => {
-  if (!sb) {
-    $('authError').textContent = 'ابتدا تنظیمات Supabase را وارد کن.';
-    return;
-  }
-
   try {
     const { data, error } = await sb.auth.signInWithOAuth({
       provider: 'google',
@@ -67,23 +61,14 @@ $('googleBtn').onclick = async () => {
 
     if (data?.url) {
       location.href = data.url;
-    }
-  } catch (err) {
-    $('authError').textContent = 'خطای ورود با گوگل: ' + err.message;
-    console.error(err);
-  }
-};
-
-    if (error) throw error;
-
-    if (data?.url) {
-      location.href = data.url;
     } else {
       errorBox.textContent = 'آدرس ورود گوگل دریافت نشد.';
     }
+
   } catch (err) {
     errorBox.textContent = 'خطای ورود گوگل: ' + (err.message || 'نامشخص');
     console.error('Google login error:', err);
+
   } finally {
     btn.disabled = false;
   }
