@@ -39,15 +39,20 @@ function math(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el])
 async function copyAnswer(text, button) {
   try {
     // تبدیل فرمول‌های LaTeX به متن خوانا
-    let cleanText = text
-      .replace(/\\\[/g, '')
-      .replace(/\\\]/g, '')
-      .replace(/\\\(/g, '')
-      .replace(/\\\)/g, '')
-      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1/$2)')
-      .replace(/\\cdot/g, '×')
-      .replace(/\\times/g, '×')
-      .replace(/\\text\{([^{}]*)\}/g, '$1');
+let cleanText = text
+  .replace(/\\\[/g, '')
+  .replace(/\\\]/g, '')
+  .replace(/\\\(/g, '')
+  .replace(/\\\)/g, '')
+  .replace(/\\left/g, '')
+  .replace(/\\right/g, '')
+  .replace(/\\quad/g, ' ')
+  .replace(/\\qquad/g, ' ')
+  .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1/$2)')
+  .replace(/\\cdot/g, '×')
+  .replace(/\\times/g, '×')
+  .replace(/\\text\{([^{}]*)\}/g, '$1')
+  .replace(/[ \t]{2,}/g, ' ');
 
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(cleanText);
