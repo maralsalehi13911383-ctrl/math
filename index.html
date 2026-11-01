@@ -34,29 +34,42 @@ const $=id=>document.getElementById(id),chat=$('chat'),form=$('form'),input=$('i
 let sb=null,user=null,currentId=null,conversations=[],selectedImage=null,authMode='register';
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function answerHtml(s){return String(s??'').split(/(\\\([^]*?\\\)|\\\[[^]*?\\\]|\$\$[^]*?\$\$|\$[^$\n]*\$)/g).map(p=>/^\\\(|^\\\[|^\$\$|^\$/.test(p)?p:esc(p).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^###?\s+(.*)$/gm,'<strong>$1</strong>').replace(/\n/g,'<br>')).join('')}
-function math(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})}async function copyAnswer(text, button) {
+function math(el){if(window.MathJax?.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})}async async function copyAnswer(text, button) {
   try {
+    // تبدیل فرمول‌های LaTeX به متن خوانا
+    let cleanText = text
+      .replace(/\\\[/g, '')
+      .replace(/\\\]/g, '')
+      .replace(/\\\(/g, '')
+      .replace(/\\\)/g, '')
+      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1/$2)')
+      .replace(/\\cdot/g, '×')
+      .replace(/\\times/g, '×')
+      .replace(/\\text\{([^{}]*)\}/g, '$1');
+
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(cleanText);
     } else {
       const area = document.createElement('textarea');
-      area.value = text;
+      area.value = cleanText;
       area.style.position = 'fixed';
       area.style.opacity = '0';
       document.body.appendChild(area);
       area.select();
+
       const copied = document.execCommand('copy');
       area.remove();
+
       if (!copied) throw new Error('کپی انجام نشد');
     }
 
     button.textContent = '✓ کپی شد';
     setTimeout(() => button.textContent = 'کپی پاسخ', 1800);
+
   } catch (error) {
     toast('کپی انجام نشد؛ اجازه دسترسی مرورگر را بررسی کن.');
   }
 }
-
 function addCopyButton(bubble, text) {
   const oldButton = bubble.querySelector('.copy-answer');
   if (oldButton) oldButton.remove();
