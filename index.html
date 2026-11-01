@@ -29,15 +29,17 @@
   unicode-bidi: plaintext;
 }
 
-.bubble .text-part {
-  direction: auto;
-  unicode-bidi: isolate;
+.bot .bubble {
+  direction: rtl;
+  text-align: right;
+  letter-spacing: normal;
+  word-spacing: normal;
+  unicode-bidi: normal;
 }
 
-.bubble .math-part {
-  direction: ltr;
-  unicode-bidi: isolate;
-  display: inline-block;
+.bubble mjx-container {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
 }
 </style></head>
 <body>
@@ -56,13 +58,13 @@ function answerHtml(s) {
     .split(/(\\\([^]*?\\\)|\\\[[^]*?\\\]|\$\$[^]*?\$\$|\$[^$\n]*\$)/g)
     .map(p => {
       if (/^\\\(|^\\\[|^\$\$|^\$/.test(p)) {
-        return `<bdi class="math-part" dir="ltr">${p}</bdi>`;
+        return p;
       }
 
-      return `<bdi class="text-part" dir="auto">${esc(p)
+      return esc(p)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/^###?\s+(.*)$/gm, '<strong>$1</strong>')
-        .replace(/\n/g, '<br>')}</bdi>`;
+        .replace(/\n/g, '<br>');
     })
     .join('');
 }
