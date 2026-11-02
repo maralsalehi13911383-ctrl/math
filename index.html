@@ -288,23 +288,25 @@ $('googleBtn').onclick = async () => {
 
 $('accountBtn').onclick=()=>{if(!user){showAuth('login');return}if(confirm('از حساب خارج شوی؟ تاریخچه در Supabase باقی می‌ماند.'))sb.auth.signOut()};
 $('newChat').onclick=newChat;$('clearChat').onclick=async()=>{const c=active();if(!c)return;if(!confirm('پیام‌های این گفت‌وگو پاک شوند؟'))return;c.messages=[];c.title='گفت‌وگوی جدید';chat.innerHTML='';showWelcome();await save(c)};
-$('menuBtn').onclick=()=>$('sidebar').classList.toggle('open');$('attachBtn').onclick=()=>$('imageInput').click();
-$('imageInput').onchange=e=>{$('menuBtn').onclick=()=>$('sidebar').classList.toggle('open');
-$('attachBtn').onclick=()=>$('imageInput').click();
+
+
+$('menuBtn').onclick = () => $('sidebar').classList.toggle('open');
+
+$('attachBtn').onclick = () => $('imageInput').click();
 
 $('imageInput').onchange = async e => {
   const file = e.target.files?.[0];
   if (!file) return;
 
-  if (file.size > 10 * 1024 * 1024) {
+  if (file.size > 2 * 1024 * 1024) {
     e.target.value = '';
-    return toast('حجم فایل باید کمتر از ۱۰ مگابایت باشد.');
+    return toast('حجم فایل باید کمتر از ۲ مگابایت باشد.');
   }
 
   const extension = file.name.split('.').pop().toLowerCase();
 
   if (file.type.startsWith('image/')) {
-    if (!['jpg','jpeg','png','webp'].includes(extension)) {
+    if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) {
       e.target.value = '';
       return toast('فرمت عکس پشتیبانی نمی‌شود.');
     }
@@ -318,12 +320,58 @@ $('imageInput').onchange = async e => {
       };
 
       selectedFile = null;
-
       $('previewImg').style.display = 'block';
       $('previewImg').src = reader.result;
       $('previewName').textContent = file.name;
       $('imagePreview').classList.add('show');
     };
+
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  if (!['pdf', 'docx', 'txt'].includes(extension)) {
+    e.target.value = '';
+    return toast('فقط PDF، Word، TXT و عکس قابل ارسال هستند.');
+  }
+
+  try {
+    toast('در حال خواندن فایل...');
+
+    const extractedText = await extractFileText(file);
+
+    if (!extractedText.trim()) {
+      throw new Error('متنی از فایل استخراج نشد. ممکن است PDF اسکن‌شده باشد.');
+    }
+
+    selectedFile = {
+      name: file.name,
+      text: extractedText
+    };
+
+    selectedImage = null;
+    $('previewImg').style.display = 'none';
+    $('previewName').textContent = '📄 ' + file.name + ' آماده ارسال است';
+    $('imagePreview').classList.add('show');
+
+    toast('فایل با موفقیت خوانده شد.');
+
+  } catch (error) {
+    $('imageInput').value = '';
+    $('imagePreview').classList.remove('show');
+    selectedFile = null;
+    toast(error.message || 'خواندن فایل ناموفق بود.');
+  }
+};
+
+$('removeImage').onclick = () => {
+  selectedImage = null;
+  selectedFile = null;
+  $('imageInput').value = '';
+  $('previewImg').style.display = 'block';
+  $('imagePreview').classList.remove('show');
+};
+
 
     reader.readAsDataURL(file);
     return;
@@ -348,7 +396,7 @@ $('imageInput').onchange = async e => {
       text: extractedText
     };
 
-    selectedImage = null;
+    
 
     $('previewImg').style.display = 'none';
     $('previewName').textContent = '📄 ' + file.name + ' آماده ارسال است';
@@ -357,7 +405,6 @@ $('imageInput').onchange = async e => {
     toast('فایل با موفقیت خوانده شد.');
 
   } catch (error) {
-    selectedFile = null;
     $('imageInput').value = '';
     $('imagePreview').classList.remove('show');
     toast(error.message || 'خواندن فایل ناموفق بود.');
@@ -382,14 +429,62 @@ const file = selectedFile;
 const question =
   text ||
   (image ? 'لطفاً سؤال داخل تصویر را بخوان و حل کن.' :
-  file ? 'لطفاً محتوای فایل را بررسی کن و سؤال‌های ریاضی آن را حل کن.' : '');input.value='';input.style.height='auto';if(!active())await newChat();const c=active();addMessage(question,'user',image);selectedImage = null;
-selectedFile = null;
-$('imageInput').value = '';
-$('previewImg').style.display = 'block';
-$('imagePreview').classList.remove('show');sendBtn.disabled=true;$('attachBtn').disabled=true;const wait=addMessage('در حال بررسی سؤال…','bot',null,false);wait.querySelector('.bubble').textContent='در حال بررسی سؤال…';try{const payload={message:question,grade:grade.value,history:c.messages.slice(-16).map(m=>({role:m.role,content:m.content}))};if(image)payload.image=image;if (file) {
-  payload.fileText = file.text;
-  payload.fileName = file.name;
-}const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)throw Error(data.error||'خطای سرور');
+  file ? 'لطفاً محتوای فایل را بررسی کن و سؤال‌های ریاضی آن را حل کن.' : '');input.value = '';
+input.style.height = 'auto';
+
+if (!active()) await newChat();
+
+const c = active();
+
+addMessage(question, 'user', image);
+
+sendBtn.disabled = true;
+$('attachBtn').disabled = true;
+
+const wait = addMessage('در حال بررسی سؤال…', 'bot', null, false);
+wait.querySelector('.bubble').textContent = 'در حال بررسی سؤال…';
+
+try {
+  const payload = {
+    message: question,
+    grade: grade.value,
+    history: c.messages.slice(-16).map(m => ({
+      role: m.role,
+      content: m.content
+    }))
+  };
+
+  if (image) payload.image = image;
+
+  if (file) {
+    payload.fileText = file.text;
+    payload.fileName = file.name;
+  }
+
+  selectedImage = null;
+  selectedFile = null;
+  $('imageInput').value = '';
+  $('previewImg').style.display = 'block';
+  $('imagePreview').classList.remove('show');
+
+  const r = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await r.json();
+  if (!r.ok) throw Error(data.error || 'خطای سرور');
+
+  const ans = data.answer || data.message || 'پاسخی دریافت نشد.';
+
+  console.log("RAW AI ANSWER:", JSON.stringify(ans));
+  console.log("PERSIAN END:", JSON.stringify(ans.slice(-100)));
+  console.log("CHAR CODES:", [...ans.slice(-100)].map(c => c.charCodeAt(0)));
+
+  const answerBubble = wait.querySelector('.bubble');
+  answerBubble.innerHTML = answerHtml(ans);
+  math(wait);const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)throw Error(data.error||'خطای سرور');
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         const ans=data.answer||data.message||'پاسخی دریافت نشد.';
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         console.log("RAW AI ANSWER:", JSON.stringify(ans));
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         console.log("PERSIAN END:", JSON.stringify(ans.slice(-100)));
