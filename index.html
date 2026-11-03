@@ -373,50 +373,8 @@ $('removeImage').onclick = () => {
 };
 
 
-    reader.readAsDataURL(file);
-    return;
-  }
 
-  if (!['pdf','docx','txt'].includes(extension)) {
-    e.target.value = '';
-    return toast('فقط PDF، Word، TXT و عکس قابل ارسال هستند.');
-  }
 
-  try {
-    toast('در حال خواندن فایل...');
-
-    const extractedText = await extractFileText(file);
-
-    if (!extractedText.trim()) {
-      throw new Error('متنی از فایل استخراج نشد. ممکن است PDF اسکن‌شده باشد.');
-    }
-
-    selectedFile = {
-      name: file.name,
-      text: extractedText
-    };
-
-    
-
-    $('previewImg').style.display = 'none';
-    $('previewName').textContent = '📄 ' + file.name + ' آماده ارسال است';
-    $('imagePreview').classList.add('show');
-
-    toast('فایل با موفقیت خوانده شد.');
-
-  } catch (error) {
-    $('imageInput').value = '';
-    $('imagePreview').classList.remove('show');
-    toast(error.message || 'خواندن فایل ناموفق بود.');
-  }
-};
-$('removeImage').onclick = () => {
-  selectedImage = null;
-  selectedFile = null;
-  $('imageInput').value = '';
-  $('previewImg').style.display = 'block';
-  $('imagePreview').classList.remove('show');
-};
 input.oninput=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px'};input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}};
 grade.onchange=()=>{const c=active();if(c){c.grade=grade.value;save(c)}};
 form.onsubmit=async e=>{e.preventDefault();if(!user){showAuth('login');return}const text = input.value.trim();
@@ -484,7 +442,6 @@ try {
 
   const answerBubble = wait.querySelector('.bubble');
   answerBubble.innerHTML = answerHtml(ans);
-  math(wait);const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)throw Error(data.error||'خطای سرور');
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         const ans=data.answer||data.message||'پاسخی دریافت نشد.';
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         console.log("RAW AI ANSWER:", JSON.stringify(ans));
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         console.log("PERSIAN END:", JSON.stringify(ans.slice(-100)));
