@@ -441,14 +441,18 @@ try {
   console.log("CHAR CODES:", [...ans.slice(-100)].map(c => c.charCodeAt(0)));
 
   const answerBubble = wait.querySelector('.bubble');
-console.log("CHAR CODES:", [...ans.slice(-100)].map(c => c.charCodeAt(0)));
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        const answerBubble = wait.querySelector('.bubble');
 answerBubble.innerHTML = answerHtml(ans);
 math(wait);
-addCopyButton(answerBubble, ans);c.messages.push({role:'assistant',content:ans});c.updatedAt=Date.now();await save(c)
+addCopyButton(answerBubble, ans);
+  
+c.messages.push({role:'assistant',content:ans});
+c.updatedAt=Date.now();
+await save(c);
+  
 }catch(err){
   wait.querySelector('.bubble').textContent =
     'خطا: ' + (err.message || 'خطای نامشخص');
+  
   console.error('خطای ارسال عکس یا پیام:', err);
 }finally{
 sendBtn.disabled=false;$('attachBtn').disabled=false;input.focus()}};
