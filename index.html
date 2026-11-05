@@ -164,6 +164,7 @@
 </head>
 <body>
 <div class="app"><aside class="sidebar" id="sidebar"><div class="brand"><div class="brand-icon">∑</div><div><h1>ریاضی‌یار</h1><p>همراه هوشمند یادگیری</p></div></div><button class="new-chat" id="newChat">＋ گفت‌وگوی جدید</button><div class="side-label">گفت‌وگوهای اخیر</div><div class="history-list" id="historyList"><div class="empty-history">هنوز گفت‌وگویی ذخیره نشده</div></div><div class="profile"><div class="avatar" id="profileAvatar">؟</div><div class="profile-info"><strong id="profileName">دانش‌آموز</strong><small id="profileGrade">وارد حساب شو</small></div><button class="icon-btn" id="accountBtn" aria-label="حساب کاربری">⚙</button></div></aside>
+<button class="sidebar-backdrop" id="sidebarBackdrop" type="button" aria-label="بستن منو"></button>
 <main class="main"><header class="topbar"><div class="top-left"><button class="icon-btn mobile-menu" id="menuBtn">☰</button><div><h2><span class="dot"></span> دستیار ریاضی هوشمند</h2><p>یاد بگیر، تمرین کن، پیشرفت کن</p></div></div><div class="top-actions"><select id="grade" class="grade"><option value="7">پایه هفتم</option><option value="8">پایه هشتم</option><option value="9">پایه نهم</option></select><button class="pill" id="clearChat">پاک‌سازی چت</button></div></header><section class="chat" id="chat" aria-live="polite"></section><div class="composer-wrap"><div class="image-preview" id="imagePreview"><img id="previewImg" alt="پیش‌نمایش تصویر"><span id="previewName">تصویر آماده ارسال است</span><button class="remove-image" id="removeImage">حذف تصویر ×</button></div><form class="composer" id="form"><input type="file" id="imageInput"
 accept="image/*,.pdf,.docx,.txt"
 class="hidden"><button type="button" class="attach" id="attachBtn" title="ارسال عکس">＋</button><textarea id="input" rows="1" placeholder="سؤالت را بنویس یا از تمرینت عکس بگیر..."></textarea><button class="send" id="sendBtn" aria-label="ارسال پیام">➤</button></form><p class="hint">می‌توانی متن سؤال یا عکس تمرینت را بفرستی · پاسخ‌ها آموزشی‌اند؛ راه‌حل را بررسی کن.</p></div></main></div>
@@ -422,14 +423,21 @@ $('newChat').onclick=newChat;$('clearChat').onclick=async()=>{const c=active();i
 
 
 function setMobileMenu(open){
-  $('sidebar').classList.toggle('open',open);
-  $('sidebarBackdrop').classList.toggle('show',open);
-  $('menuBtn').setAttribute('aria-expanded',String(open));
+  const sidebar = $('sidebar');
+  const backdrop = $('sidebarBackdrop');
+  const menuButton = $('menuBtn');
+  if (sidebar) sidebar.classList.toggle('open', open);
+  if (backdrop) backdrop.classList.toggle('show', open);
+  if (menuButton) menuButton.setAttribute('aria-expanded', String(open));
 }
-$('menuBtn').onclick=()=>setMobileMenu(!$('sidebar').classList.contains('open'));
-$('sidebarBackdrop').onclick=()=>setMobileMenu(false);
+if ($('menuBtn')) {
+  $('menuBtn').onclick = () => setMobileMenu(!$('sidebar')?.classList.contains('open'));
+}
+if ($('sidebarBackdrop')) {
+  $('sidebarBackdrop').onclick = () => setMobileMenu(false);
+}
 
-$('attachBtn').onclick = () => $('imageInput').click();
+if ($('attachBtn') && $('imageInput')) $('attachBtn').onclick = () => $('imageInput').click();
 
 $('imageInput').onchange = async e => {
   const file = e.target.files?.[0];
