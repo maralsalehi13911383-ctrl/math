@@ -230,35 +230,24 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 }
 
 
+
 function answerHtml(s) {
-  let source = String(s ?? '');
+  const source = String(s ?? '');
 
-  // متن فارسی داخل فرمول را از محیط ریاضی خارج می‌کنیم
-  function fixPersianText(match, open, body, close) {
-    const fixedBody = body.replace(
-      /\\text\{([^{}]*)\}/g,
-      (m, text) => `\\]${text}\\[`
-    );
-
-    return open + fixedBody + close;
-  }
-
-  // فرمول‌های چندخطی
-  source = source.replace(
-    /(\\\[)([\s\S]*?)(\\\])/g,
-    fixPersianText
+  const parts = source.split(
+    /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g
   );
 
-  // فرمول‌های داخل جمله
-  source = source.replace(
-    /(\\\()([\s\S]*?)(\\\))/g,
-    fixPersianText
-  );
+  const safeText = parts.map(part => {
+    if (part.startsWith('\\[') || part.startsWith('\\(')) {
+      return esc(part);
+    }
 
-  const safeText = esc(source)
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^###?\s+(.*)$/gm, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
+    return esc(part)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^###?\s+(.*)$/gm, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  }).join('');
 
   return `
     <div dir="rtl" style="
